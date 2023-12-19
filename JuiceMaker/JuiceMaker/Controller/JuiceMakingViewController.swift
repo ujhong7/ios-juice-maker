@@ -6,7 +6,7 @@
 
 import UIKit
 
-class JuiceMakingViewController: UIViewController {
+final class JuiceMakingViewController: UIViewController {
     
     @IBOutlet var numberOfStrawberry: UILabel!
     @IBOutlet var numberOfBanana: UILabel!
@@ -74,7 +74,6 @@ extension JuiceMakingViewController {
         
         stockChangeButton.target = self
         stockChangeButton.action = #selector(stockChangeButtonTapped)
-        
     }
     
     @objc func orderJuice(_ sender: UIButton) {
@@ -101,7 +100,6 @@ extension JuiceMakingViewController {
         }
         
         self.present(generateAlert(by: result), animated: true, completion: nil)
-        
     }
     
     func generateAlert(by result: JuiceMaker.JuiceMakingResult) -> UIAlertController {
@@ -129,6 +127,7 @@ extension JuiceMakingViewController {
     }
 }
 
+// MARK: - 설명 추가
 extension JuiceMakingViewController {
     func registerObserver() {
         NotificationCenter.default.addObserver(self, selector: #selector(didChangeFruitsAmount(_:)), name: Notification.Name("fruitsAmountDidChange"), object: nil)
@@ -138,22 +137,52 @@ extension JuiceMakingViewController {
         guard let userInfo = notification.userInfo, let fruitInfo = userInfo as? [Fruit : Int] else {
             return
         }
-        
         self.showNumberOnLabel(fruits: fruitInfo)
     }
     
     func turnOffObserver() {
         NotificationCenter.default.removeObserver(self, name: Notification.Name("fruitsAmountDidChange"), object: nil)
     }
-    
 }
 
+//
+//extension JuiceMakingViewController {
+//    func registerObserver2() {
+//        NotificationCenter.default.addObserver(self, selector: #selector(didChangeFruitsComplete(_:)), name: Notification.Name("fruitsAmountChangeComplete"), object: nil)
+//    }
+//    
+//    @objc func didChangeFruitsComplete(_ notification: Notification) {
+//        guard let userInfo = notification.userInfo, let fruitInfo = userInfo as? [Fruit : Int] else {
+//            return
+//        }
+//        juiceMaker.fruitStore.changeAmountAll(fruitInfo)
+//        self.showNumberOnLabel(fruits: fruitInfo)
+//        turnOffObserver2()
+//    }
+//    
+//    func turnOffObserver2() {
+//        NotificationCenter.default.removeObserver(self, name: Notification.Name("fruitsAmountChangeComplete"), object: nil)
+//    }
+//    
+//}
+
+extension JuiceMakingViewController: StockManagementViewControllerDelegate {
+    func changeAmount(_ fruit: [Fruit: Int]) {
+        let a = juiceMaker.fruitStore.changeAmountAll(fruit)
+        print(a)
+        showNumberOnLabel(fruits: a)
+    }
+}
+
+// 보통 뷰컨은 분리 잘 안함.
 extension JuiceMakingViewController {
     func dataToStockManagementViewController() {
+//        registerObserver2()
         if let stockManagementVC = self.storyboard?.instantiateViewController(withIdentifier: "StockManagementViewController") as? StockManagementViewController {
             stockManagementVC.receivedData = juiceMaker.fruitStore.inventory
-            let stockManagementNavigationController = UINavigationController(rootViewController: stockManagementVC)
+            stockManagementVC.delegate = self
             
+            let stockManagementNavigationController = UINavigationController(rootViewController: stockManagementVC)
             stockManagementNavigationController.modalPresentationStyle = .pageSheet
             stockManagementNavigationController.sheetPresentationController?.detents = [.large(), .medium()]
             stockManagementNavigationController.sheetPresentationController?.preferredCornerRadius = 30

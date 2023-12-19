@@ -6,7 +6,7 @@
 
 import Foundation
 
-class FruitStore {
+final class FruitStore {
     private(set) var inventory = Fruit.allCases.reduce([Fruit: Int]()) { bag, fruit in
         var bag = bag
         let initialNumberOfFruits = 10
@@ -14,8 +14,16 @@ class FruitStore {
         return bag
     }
 
-    func changeAmount(_ fruit: Fruit, _ number: Int) {
+    private func changeAmount(_ fruit: Fruit, _ number: Int) {
         inventory[fruit] = number
+    }
+    
+    func changeAmountAll(_ fruit: [Fruit: Int]) -> [Fruit: Int] {
+        for one in fruit {
+            changeAmount(one.key, one.value)
+        }
+        
+        return inventory
     }
     
     private func sendNotification(about fruit: Fruit, number: Int) {
@@ -44,6 +52,7 @@ class FruitStore {
         guard let numberOfFruitExist = inventory[fruit] else {
             throw InventoryError.notExist(description: InventoryError.notExistMessage)
         }
+        
         return numberOfFruitExist
     }
     
@@ -55,7 +64,7 @@ class FruitStore {
             try checkStock(amountOfFruitNow: numberOfFruit, requiredAmount: demand.requestedAmount)
             numberOfFruitExist.append(numberOfFruit)
         }
-
+        
         return numberOfFruitExist
     }
     
@@ -64,5 +73,4 @@ class FruitStore {
         
         useIngredients(accordingTo: recipes, checkAmountOfFruits: amountOfFruit)
     }
-    
 }

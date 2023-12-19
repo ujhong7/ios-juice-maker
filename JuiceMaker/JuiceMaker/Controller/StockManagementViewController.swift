@@ -12,7 +12,7 @@ protocol StockManagementViewControllerDelegate: AnyObject {
 }
 
 final class StockManagementViewController: UIViewController {
-    
+    // delegate 변수 선언 -> 항상 메모리에 올라가 있지 않게끔 weak로 선언을 함.
     weak var delegate: StockManagementViewControllerDelegate?
     
     @IBOutlet var numberOfStrawberry: UILabel!
@@ -32,26 +32,26 @@ final class StockManagementViewController: UIViewController {
     }
     
     @IBAction func completeButtonPressed(_ sender: UIBarButtonItem) {
-        changeStock(fruits: receivedData)
+        changeStock(fruits: receivedFruitInventoryData)
 //        sendNotification()
-        delegate?.changeAmount(receivedData)
+        delegate?.changeAmount(receivedFruitInventoryData)
         self.dismiss(animated: true, completion: nil)
     }
     
-    var receivedData: [Fruit:Int] = [:]
+    var receivedFruitInventoryData: [Fruit:Int] = [:]
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        showNumberOnLabel(fruits: receivedData)
-        setUpTargetActionOnStepper()
-        setupStepper(fruits: receivedData)
+        showNumberOnLabel(fruits: receivedFruitInventoryData)
+        setupTargetActionOnStepper()
+        setupStepper(fruits: receivedFruitInventoryData)
     }
 }
 
 
 extension StockManagementViewController {
-    func setUp(number: Int, on stepper: UIStepper) {
+    func setup(number: Int, on stepper: UIStepper) {
         stepper.minimumValue = -Double(number)
         stepper.maximumValue = 100
     }
@@ -60,15 +60,15 @@ extension StockManagementViewController {
         for fruit in fruits {
             switch fruit.key {
             case .strawberry:
-                setUp(number: fruit.value, on: changeAmountOfStrawberry)
+                setup(number: fruit.value, on: changeAmountOfStrawberry)
             case .banana:
-                setUp(number: fruit.value, on: changeAmountOfBanana)
+                setup(number: fruit.value, on: changeAmountOfBanana)
             case .pineapple:
-                setUp(number: fruit.value, on: changeAmountOfPineApple)
+                setup(number: fruit.value, on: changeAmountOfPineApple)
             case .kiwi:
-                setUp(number: fruit.value, on: changeAmountOfKiwi)
+                setup(number: fruit.value, on: changeAmountOfKiwi)
             case .mango:
-                setUp(number: fruit.value, on: changeAmountOfMango)
+                setup(number: fruit.value, on: changeAmountOfMango)
             }
         }
     }
@@ -99,7 +99,7 @@ extension StockManagementViewController {
 
 extension StockManagementViewController {
     func changeAmount(_ fruit: Fruit, _ number: Int) {
-        receivedData[fruit] = number
+        receivedFruitInventoryData[fruit] = number
     }
     
     func changeStock(fruits: [Fruit: Int]) {
@@ -121,7 +121,7 @@ extension StockManagementViewController {
 }
 
 extension StockManagementViewController {
-    func setUpTargetActionOnStepper() {
+    func setupTargetActionOnStepper() {
         changeAmountOfStrawberry.addTarget(self, action: #selector(changeAmount(_:)), for: .valueChanged)
         changeAmountOfBanana.addTarget(self, action: #selector(changeAmount(_:)), for: .valueChanged)
         changeAmountOfPineApple.addTarget(self, action: #selector(changeAmount(_:)), for: .valueChanged)
@@ -132,23 +132,23 @@ extension StockManagementViewController {
     @objc func changeAmount(_ sender: UIStepper) {
         switch sender {
         case changeAmountOfStrawberry:
-            if let result = receivedData[.strawberry] {
+            if let result = receivedFruitInventoryData[.strawberry] {
                 numberOfStrawberry.text = (Int(sender.value) + result).description
             }
         case changeAmountOfBanana:
-            if let result = receivedData[.banana] {
+            if let result = receivedFruitInventoryData[.banana] {
                 numberOfBanana.text = (Int(sender.value) + result).description
             }
         case changeAmountOfPineApple:
-            if let result = receivedData[.pineapple] {
+            if let result = receivedFruitInventoryData[.pineapple] {
                 numberOfPineApple.text = (Int(sender.value) + result).description
             }
         case changeAmountOfKiwi:
-            if let result = receivedData[.kiwi] {
+            if let result = receivedFruitInventoryData[.kiwi] {
                 numberOfKiwi.text = (Int(sender.value) + result).description
             }
         case changeAmountOfMango:
-            if let result = receivedData[.mango] {
+            if let result = receivedFruitInventoryData[.mango] {
                 numberOfMango.text = (Int(sender.value) + result).description
             }
         default:

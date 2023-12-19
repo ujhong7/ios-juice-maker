@@ -179,7 +179,7 @@ extension JuiceMakingViewController {
     func dataToStockManagementViewController() {
 //        registerObserver2()
         if let stockManagementVC = self.storyboard?.instantiateViewController(withIdentifier: "StockManagementViewController") as? StockManagementViewController {
-            stockManagementVC.receivedData = juiceMaker.fruitStore.inventory
+            stockManagementVC.receivedFruitInventoryData = juiceMaker.fruitStore.inventory
             stockManagementVC.delegate = self
             
             let stockManagementNavigationController = UINavigationController(rootViewController: stockManagementVC)
